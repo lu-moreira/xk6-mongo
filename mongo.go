@@ -56,13 +56,15 @@ func (mi *ModuleInstance) Exports() modules.Exports {
 	}
 }
 
-func (m *Client) Connect(ctx context.Context, uri string) error {
+func (m *Client) Connect(uri string) error {
+	ctx := context.Background()
+
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
 		return err
 	}
 
-	if err := client.Ping(context.Background(), readpref.Nearest()); err != nil {
+	if err := client.Ping(ctx, readpref.Nearest()); err != nil {
 		return err
 	}
 
@@ -77,7 +79,8 @@ type (
 	}
 )
 
-func (m *Client) Aggregate(ctx context.Context, database, collection string, stages bson.D) (*AggregateResponse, error) {
+func (m *Client) Aggregate(database, collection string, stages bson.D) (*AggregateResponse, error) {
+	ctx := context.Background()
 	st := time.Now()
 	cur, err := m.client.Database(database).Collection(collection).Aggregate(ctx, mongo.Pipeline{stages})
 	if err != nil {
