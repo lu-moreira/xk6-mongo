@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"go.k6.io/k6/js/modules"
@@ -80,8 +81,11 @@ type (
 )
 
 func (m *Client) Aggregate(database, collection string, stages bson.D) (*AggregateResponse, error) {
+	log.Println("pipeline to be aggregated ", stages)
+
 	ctx := context.Background()
 	st := time.Now()
+
 	cur, err := m.client.Database(database).Collection(collection).Aggregate(ctx, mongo.Pipeline{stages})
 	if err != nil {
 		return nil, err
